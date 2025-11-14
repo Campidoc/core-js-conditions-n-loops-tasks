@@ -274,6 +274,7 @@ function getIndexOf(str, letter) {
  *  12345, 6    => false
  */
 function isContainNumber(num, digit) {
+  
 }
 
 /**
