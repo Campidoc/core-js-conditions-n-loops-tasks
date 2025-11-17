@@ -412,8 +412,31 @@ function getSpiralMatrix(size) {
  *    [7, 8, 9]         [9, 6, 3]
  *  ]                 ]
  */
-function rotateMatrix(/* matrix */) {
-  throw new Error('Not implemented');
+
+function rotateMatrix(inputMatrix) {
+  const matrix = inputMatrix;
+  const n = matrix.length;
+
+  for (let layer = 0; layer < Math.floor(n / 2); layer += 1) {
+    const first = layer;
+    const last = n - 1 - layer;
+
+    for (let i = first; i < last; i += 1) {
+      const offset = i - first;
+
+      const top = matrix[first][i];
+      const left = matrix[last - offset][first];
+      const bottom = matrix[last][last - offset];
+      const right = matrix[i][last];
+
+      matrix[first][i] = left;
+      matrix[last - offset][first] = bottom;
+      matrix[last][last - offset] = right;
+      matrix[i][last] = top;
+    }
+  }
+
+  return matrix;
 }
 
 /**
@@ -430,8 +453,51 @@ function rotateMatrix(/* matrix */) {
  *  [2, 9, 5, 9]    => [2, 5, 9, 9]
  *  [-2, 9, 5, -3]  => [-3, -2, 5, 9]
  */
-function sortByAsc(/* arr */) {
-  throw new Error('Not implemented');
+
+function sortByAsc(inputArr) {
+  const arr = inputArr;
+  const n = arr.length;
+
+  if (n <= 1) return arr;
+  const temp = [];
+  for (let i = 0; i < n; i += 1) {
+    temp[i] = arr[i];
+  }
+
+  for (let size = 1; size < n; size *= 2) {
+    for (let left = 0; left < n; left += 2 * size) {
+      const mid = Math.min(left + size, n);
+      const right = Math.min(left + 2 * size, n);
+      let i = left;
+      let j = mid;
+      let k = left;
+      while (i < mid && j < right) {
+        if (temp[i] <= temp[j]) {
+          arr[k] = temp[i];
+          i += 1;
+        } else {
+          arr[k] = temp[j];
+          j += 1;
+        }
+        k += 1;
+      }
+      while (i < mid) {
+        arr[k] = temp[i];
+        i += 1;
+        k += 1;
+      }
+      while (j < right) {
+        arr[k] = temp[j];
+        j += 1;
+        k += 1;
+      }
+    }
+    for (let i = 0; i < n; i += 1) {
+      temp[i] = arr[i];
+    }
+  }
+
+  return arr;
 }
 
 /**
@@ -451,8 +517,40 @@ function sortByAsc(/* arr */) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* str, iterations */) {
-  throw new Error('Not implemented');
+function shuffleChar(str, iterations) {
+  if (str.length <= 1 || iterations === 0) return str;
+
+  let result = str;
+  const resultsHistory = [str];
+  let period = 0;
+
+  for (let i = 1; i <= iterations; i += 1) {
+    let evenChars = '';
+    let oddChars = '';
+
+    for (let j = 0; j < result.length; j += 1) {
+      if (j % 2 === 0) {
+        evenChars += result[j];
+      } else {
+        oddChars += result[j];
+      }
+    }
+
+    result = evenChars + oddChars;
+    resultsHistory[i] = result;
+
+    if (result === str) {
+      period = i;
+      break;
+    }
+  }
+
+  if (period > 0) {
+    const effectiveIterations = iterations % period;
+    return resultsHistory[effectiveIterations];
+  }
+
+  return result;
 }
 
 /**
@@ -473,8 +571,57 @@ function shuffleChar(/* str, iterations */) {
  * 321321   => 322113
  *
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(number) {
+  if (number < 10) return number;
+
+  const digits = [];
+  let temp = number;
+  let digitCount = 0;
+
+  while (temp > 0) {
+    digits[digitCount] = temp % 10;
+    temp = Math.floor(temp / 10);
+    digitCount += 1;
+  }
+  digits.reverse();
+
+  let pivotIndex = -1;
+  for (let i = digits.length - 2; i >= 0; i -= 1) {
+    if (digits[i] < digits[i + 1]) {
+      pivotIndex = i;
+      break;
+    }
+  }
+
+  if (pivotIndex === -1) return number;
+
+  let swapIndex = pivotIndex + 1;
+  for (let i = pivotIndex + 2; i < digits.length; i += 1) {
+    if (digits[i] > digits[pivotIndex] && digits[i] < digits[swapIndex]) {
+      swapIndex = i;
+    }
+  }
+
+  const tempDigit = digits[pivotIndex];
+  digits[pivotIndex] = digits[swapIndex];
+  digits[swapIndex] = tempDigit;
+
+  for (let i = pivotIndex + 1; i < digits.length - 1; i += 1) {
+    for (let j = i + 1; j < digits.length; j += 1) {
+      if (digits[i] > digits[j]) {
+        const swapTemp = digits[i];
+        digits[i] = digits[j];
+        digits[j] = swapTemp;
+      }
+    }
+  }
+
+  let result = 0;
+  for (let i = 0; i < digits.length; i += 1) {
+    result = result * 10 + digits[i];
+  }
+
+  return result;
 }
 
 module.exports = {
